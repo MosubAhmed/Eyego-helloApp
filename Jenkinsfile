@@ -1,5 +1,7 @@
 pipeline{
-    agent any
+    agent{
+        label 'aws-agent'
+    }
     stages{
         stage("preparation"){
             steps{
@@ -46,7 +48,17 @@ pipeline{
                
                 
             }
-        } 
+        }
+        stage("deploy"){
+            steps{
+                script{
+                    withAWS(credentials: 'aws-cli', region: 'us-east-1') {
+                        sh 'aws eks update-kubeconfig --region us-east-1 --name eks'
+                        sh 'kubectl apply -f deployment.yaml' 
+                }
+                }
+            }
+        }
 
     }
 }
