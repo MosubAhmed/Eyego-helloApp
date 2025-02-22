@@ -67,14 +67,18 @@ pipeline{
             }
         }
 
-       stage('Deploy to Kubernetes') {
+       stage('Deploy to AWS k8s') {
             steps {
                 script {
-                    sh """
-                        # configure kubectl
+                    withAWS(credentials: 'aws-cli', region: 'us-east-1') {
+                        sh """
+                        
                         aws eks --region us-east-1 update-kubeconfig --name eyego-eks-cluster
                         kubectl apply -f deployment.yaml
-                    """
+                        
+                        """
+                }
+
                 }
             }
         }
