@@ -5,10 +5,10 @@ metadata:
   labels:
     app: eyego-app
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: eyego-app
-  replicas: 2
   strategy:
     type: RollingUpdate
   template:
@@ -16,9 +16,11 @@ spec:
       labels:
         app: eyego-app
     spec:
+      imagePullSecrets:
+      - name: ecr-secret
       containers:
       - name: eyego-app
-        image: mosub/eyego-app:latest
+        image: 034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo:latest
         ports:
         - containerPort: 80
           protocol: TCP
