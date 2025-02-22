@@ -31,5 +31,22 @@ pipeline{
             }
         }    
 
+
+        stage("push Image to docker hub"){
+            steps{
+                            withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'password', usernameVariable: 'username')]) {
+                            sh """
+                                docker login -u ${username} -p ${password}
+                                docker tag eyego-app:latest ${username}/eyego-app:latest
+                                docker push ${username}/eyego-app:latest
+                                docker logout
+                                
+                                """
+                }
+               
+                
+            }
+        } 
+
     }
 }
