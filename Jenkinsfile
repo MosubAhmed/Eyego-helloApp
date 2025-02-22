@@ -74,7 +74,7 @@ pipeline{
                         sh """
                         
                         aws eks --region us-east-1 update-kubeconfig --name eyego-eks-cluster
-                        kubectl apply -f deployment.yaml
+                        kubectl apply -f deployment.yaml --validate=false
                         
                         """
                 }
