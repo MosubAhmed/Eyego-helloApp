@@ -59,17 +59,7 @@ pipeline{
             }
         }
 
-        
-        stage("deploy"){
-            steps{
-                script{
-                    withAWS(credentials: 'aws-cli', region: 'us-east-1') {
-                        sh 'aws eks update-kubeconfig --region us-east-1 --name eks-Eyego'
-                        sh 'kubectl apply -f deployment.yaml --validate=false' 
-                }
-                }
-            }
-        }
+
 
     }
 }
