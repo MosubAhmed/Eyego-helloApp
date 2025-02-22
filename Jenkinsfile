@@ -1,7 +1,11 @@
 pipeline{
     agent any
-    environment{
-        registry = "034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo"
+ environment {
+        AWS_ACCOUNT_ID="034362040531"
+        AWS_DEFAULT_REGION="us-east-1"
+        IMAGE_REPO_NAME="eyego-repo"
+        IMAGE_TAG="latest"
+        REPOSITORY_URI = "034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo"
     }
 
     stages{
@@ -27,13 +31,13 @@ pipeline{
                 
             }
         }      
-        stage("build Image"){
-            steps{
-                
-               sh 'docker build -t eyego-app:latest . '
-                
-            }
-        }    
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build "${IMAGE_REPO_NAME}:${IMAGE_TAG}"
+        }
+      }
+    }
 
 
         stage("push Image to docker hub"){
@@ -50,15 +54,24 @@ pipeline{
             }
         }
 
-        
-        stage("push image to ECR"){
+          stage("logging to ECR"){
             steps{
-                script{
-                sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 034362040531.dkr.ecr.us-east-1.amazonaws.com'
-                sh 'docker push 034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo:latest'                 
+                script{      
+                     sh """
+                    aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+                    """
                 }                
             }
         }
+
+ stage('Pushing to ECR') {
+     steps{  
+         script {
+                sh """docker tag ${IMAGE_REPO_NAME}:${IMAGE_TAG} ${REPOSITORY_URI}:$IMAGE_TAG"""
+                sh """docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"""
+         }
+        }
+      }
 
 
 
