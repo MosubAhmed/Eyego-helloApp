@@ -72,8 +72,8 @@ pipeline{
                 script {
                     sh """
                         # configure kubectl
-                        aws eks --region us-east-1 update-kubeconfig --name my-eks-cluster
-                        kubectl apply -f k8s-deployment.yaml
+                        aws eks --region us-east-1 update-kubeconfig --name eyego-eks-cluster
+                        kubectl apply -f deployment.yaml
                     """
                 }
             }
