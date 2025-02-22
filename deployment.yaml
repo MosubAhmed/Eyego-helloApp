@@ -22,6 +22,6 @@ spec:
       - name: eyego-app
         image: 034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo:latest
         ports:
-        - containerPort: 80
+        - containerPort: 3000
           protocol: TCP
         imagePullPolicy: Always
