@@ -47,25 +47,35 @@ pipeline{
                 }   
             }
         }
-        stage('Push to ECR') {
+        stage('Push to ecr') {
             steps {
                 script {
-                    sh '''
-                        # Authenticate Docker with AWS ECR
+                    sh """
+                        # login to aws ecr
                         aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 034362040531.dkr.ecr.us-east-1.amazonaws.com
         
-                        # Build the Docker image
+                        # build the image
                         docker build -t eyego-repo .
         
-                        # Tag the image for ECR
+                        # Tag the image
                         docker tag eyego-repo:latest 034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo:latest
         
-                        # Push the image to AWS ECR
+                        # push image to ecr
                         docker push 034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo:latest
-                    '''
+                    """
                 }
             }
         }
+
+        stage("deploy app") {
+            steps {
+                withCredentials([aws(credentialsId: 'aws-cli', region: 'us-east-1')]) {
+                    sh """
+                        aws eks update-kubeconfig --region us-east-1 --name eks-Eyego
+                        kubectl apply -f deployment.yaml
+                    """
+                }
+            }
 
 
 
