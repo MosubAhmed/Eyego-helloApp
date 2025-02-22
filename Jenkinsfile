@@ -1,8 +1,9 @@
 pipeline{
     agent any
-    enviroment{
-        registry="034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo"
+    environment{
+        registry = "034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo"
     }
+
     stages{
         stage("preparation"){
             steps{
