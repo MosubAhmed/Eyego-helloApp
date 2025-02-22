@@ -25,3 +25,17 @@ spec:
         - containerPort: 3000
           protocol: TCP
         imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eyego-app-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: eyego-app
+
+    
