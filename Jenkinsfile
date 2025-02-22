@@ -26,7 +26,7 @@ pipeline{
         stage("build Image"){
             steps{
                 
-               sh 'docker built -t eyego-app:latest . '
+               sh 'docker build -t eyego-app:latest . '
                 
             }
         }    
