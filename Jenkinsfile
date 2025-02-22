@@ -67,12 +67,13 @@ pipeline{
             }
         }
 
-        stage("deploy app") {
+       stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([aws(credentialsId: 'aws-cli', region: 'us-east-1')]) {
+                script {
                     sh """
-                        aws eks update-kubeconfig --region us-east-1 --name eks-Eyego
-                        kubectl apply -f deployment.yaml
+                        # configure kubectl
+                        aws eks --region us-east-1 update-kubeconfig --name my-eks-cluster
+                        kubectl apply -f k8s-deployment.yaml
                     """
                 }
             }
