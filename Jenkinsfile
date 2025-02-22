@@ -23,7 +23,13 @@ pipeline{
                 
             }
         }      
-
+        stage("build Image"){
+            steps{
+                
+               sh 'docker built -t Eyego-app:latest . '
+                
+            }
+        }    
 
     }
 }
