@@ -1,12 +1,6 @@
 pipeline{
     agent any
- environment {
-        AWS_ACCOUNT_ID="034362040531"
-        AWS_DEFAULT_REGION="us-east-1"
-        IMAGE_REPO_NAME="eyego-repo"
-        IMAGE_TAG="latest"
-        REPOSITORY_URI = "034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo"
-    }
+
 
     stages{
         stage("preparation"){
