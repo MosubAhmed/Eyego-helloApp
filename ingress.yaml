@@ -8,7 +8,7 @@ metadata:
     alb.ingress.kubernetes.io/target-type: ip
 spec:
   rules:
-    - host: eyegotask.example.com 
+    - host: eyegotask.example.com
       http:
         paths:
           - path: /
