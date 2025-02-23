@@ -73,7 +73,8 @@ pipeline{
                     withAWS(credentials: 'aws-cli', region: 'us-east-1') {
                         sh """
                         
-                        aws eks --region us-east-1 update-kubeconfig --name demo-eks
+                        aws eks  update-kubeconfig --name demo-eks --region us-east-1
+                        kubectl get ns
                         kubectl apply -f deployment.yaml --validate=false
                         
                         """
