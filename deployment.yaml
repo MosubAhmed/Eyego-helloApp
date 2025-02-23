@@ -31,7 +31,7 @@ kind: Service
 metadata:
   name: eyego-app-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - port: 80
     targetPort: 3000
