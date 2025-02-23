@@ -73,7 +73,7 @@ pipeline{
                     withAWS(credentials: 'aws-cli', region: 'us-east-1') {
                         sh """
                         
-                        aws eks --region us-east-1 update-kubeconfig --name eyego-eks-cluster
+                        aws eks --region us-east-1 update-kubeconfig --name demo-eks
                         kubectl apply -f deployment.yaml --validate=false
                         
                         """
