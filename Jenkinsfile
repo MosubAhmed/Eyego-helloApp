@@ -75,7 +75,7 @@ pipeline{
                         
                         aws eks  update-kubeconfig --name demo-eks --region us-east-1
                         kubectl get ns
-                        kubectl apply -f deployment.yaml --validate=false
+                        kubectl apply -f nodejs-app.yaml --validate=false
                         kubectl apply -f ingress.yaml
                         """
                 }
