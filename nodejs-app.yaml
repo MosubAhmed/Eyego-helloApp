@@ -1,9 +1,8 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: eyego-app
-  labels:
-    app: eyego-app
 spec:
   replicas: 2
   selector:
@@ -11,31 +10,48 @@ spec:
       app: eyego-app
   strategy:
     type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
         app: eyego-app
     spec:
-      imagePullSecrets:
-      - name: ecr-secret
       containers:
-      - name: eyego-app
+      - name: app
         image: 034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo:latest
         ports:
         - containerPort: 3000
-          protocol: TCP
-        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: eyego-app-service
+  name: eyego-service
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
   - port: 80
     targetPort: 3000
+    protocol: TCP
   selector:
     app: eyego-app
-
-    
