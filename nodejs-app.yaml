@@ -48,7 +48,7 @@ kind: Service
 metadata:
   name: eyego-service
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
   - port: 80
     targetPort: 3000
