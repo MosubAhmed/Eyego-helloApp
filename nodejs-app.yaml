@@ -19,8 +19,8 @@ spec:
         app: eyego-app
     spec:
       containers:
-      - name: app
-        image: 034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo:latest
+      - name: eyego-app
+        image: mosub/eyego-app:latest
         ports:
         - containerPort: 3000
         resources:
