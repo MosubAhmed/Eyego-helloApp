@@ -1,89 +1,86 @@
-pipeline{
+pipeline {
     agent any
 
-
-    stages{
-        stage("preparation"){
-            steps{
-                checkout scm
+    stages {
+        stage("Preparation") {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    extensions: [],
+                    userRemoteConfigs: [[
+                        credentialsId: 'Github',
+                        url: 'https://github.com/MosubAhmed/Eyego-helloApp/'
+                    ]]
+                ])
             }
         }
 
-
-        stage("test"){
-            steps{
-                
-               sh 'sudo yum install npm'
-               sh 'npm test'
-                
+        stage("Test") {
+            steps {
+                sh 'sudo -n apt-get update'
+                sh 'sudo -n apt-get install -y npm'
+                sh 'npm test'
             }
         }
-        stage("build"){
-            steps{
-                
-               sh 'npm run build'
-                
+
+        stage("Build the app") {
+            steps {
+                sh 'npm run build'
             }
-        }      
-    stage('Building image') {
-      steps{
-        script {
-           sh 'docker build -t eyego-app:latest .' 
         }
-      }
-    }
 
+        stage('Build image') {
+            steps {
+                script {
+                    sh 'docker build -t eyego-app:latest .' 
+                }
+            }
+        }
 
-        stage("push Image to docker hub"){
-            steps{
-                            withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'password', usernameVariable: 'username')]) {
-                            sh """
-                                docker login -u ${username} -p ${password}
-                                docker tag eyego-app:latest ${username}/eyego-app:latest
-                                docker push ${username}/eyego-app:latest
-                                docker logout
-                                
-                                """           
+        stage("Push Image to Docker Hub") {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub', 
+                    passwordVariable: 'password', 
+                    usernameVariable: 'username'
+                )]) {
+                    sh '''
+                        docker login -u $username -p $password
+                        docker tag eyego-app:latest $username/eyego-app:latest
+                        docker push $username/eyego-app:latest
+                        docker logout
+                    '''           
                 }   
             }
         }
-        stage('Push to ecr') {
+
+        stage("Push image to ECR") {
             steps {
                 script {
-                    sh """
-                        # login to aws ecr
-                        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 034362040531.dkr.ecr.us-east-1.amazonaws.com
-        
-                        # build the image
-                        docker build -t eyego-repo .
-        
-                        # Tag the image
-                        docker tag eyego-repo:latest 034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo:latest
-        
-                        # push image to ecr
-                        docker push 034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo:latest
-                    """
+                    sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 034362040531.dkr.ecr.us-east-1.amazonaws.com"
+                    sh "docker tag eyego-app:latest 034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo:latest"
+                    sh "docker push 034362040531.dkr.ecr.us-east-1.amazonaws.com/eyego-repo:latest"
                 }
             }
         }
 
-       stage('Deploy to AWS k8s') {
+        stage("Deploy from the dockerhub to K8S") {
             steps {
                 script {
-                    withAWS(credentials: 'aws-cli', region: 'us-east-1') {
-                        sh """
-                        
-                        aws eks  update-kubeconfig --name demo-eks --region us-east-1
-                        kubectl get ns
-                        kubectl apply -f nodejs-app.yaml --validate=false
-                        kubectl apply -f ingress.yaml
-                        """
-                }
-
+                   withAWS(credentials: 'aws-cli', region: 'us-east-1') {
+                   sh   'aws eks  update-kubeconfig --name eyego-ekscluster --region us-east-1'
+                   sh   'kubectl apply -f nodejs-app.yaml --validate=false'
+                       
+                            
+                            
+                    } 
                 }
             }
         }
 
 
-    }
+
+
+          }
 }
